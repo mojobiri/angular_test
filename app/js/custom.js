@@ -39,13 +39,13 @@ function handleFile(e) {
 
             // $.ajax({
             //     type: 'POST',
-            //     url: '/mobileupload',
+            //     url: 'http://localhost:3003/upload.json',
             //     dataType: "json",
             //     data: { image: reader.result.replace(/^data:image\/(png|jpeg);base64,/, "") }, //wtf do you have to do this?
             //     success: function(resp){
-            //         if( resp["result"] && resp["result"] == "success") {
-            //             var msg = trash.createMessage("image",resp["msg"]);
-            //             trash.trashio.sendMessage(msg);
+            //         console.log(resp);
+            //         if( resp["status"] ) {
+            //             console.log(resp);
             //         }
             //     }
             // });

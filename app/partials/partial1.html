@@ -1,1 +1,22 @@
 <p>This is the partial for view 1.</p>
+
+<div bind-once style="float: left; display: inline; height: 800px; white-space: nowrap;" ng-repeat="photo in communityPhotos">
+  <img style="max-height:200px; max-width:200px" ng-src="{{photo}}"/>
+</div>
+
+<div ng-controller="UploadsController">
+  <div ng-repeat="i in getTimes(3) track by $index">
+    <p>File input:</p>
+    <input id="file_{{$index+1}}" ng-file-select="onFileSelect($files, $index)" name="file" type="file" accept="image/*" />
+
+    <span class="progress" ng-show="progress[$index+1] >= 0">
+      <div style="color:red;width:{{progress[$index+1]}}%">{{progress[$index+1]}}%</div>
+    </span>
+
+    <!-- <p>Canvas output:</p>
+    <canvas id="canvas"></canvas><br /> -->
+
+    <p>Dom element image output:</p>
+    <img style="max-height:200px; max-width:200px" id="userImage_{{$index+1}}" ng-src="{{userImages[$index+1]}}" /><br />
+  </div>
+</div>
