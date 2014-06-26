@@ -3,11 +3,11 @@
 /* Controllers */
 
 angular.module('myApp.controllers', [])
-  .controller('MyCtrl1', ['$scope', 'photoService', function($scope, photoService) {
+  .controller('MyCtrl1', ['$scope', 'photoService', 'ENV', function($scope, photoService, ENV) {
     $scope.communityPhotos = [];
     $scope.userImages = {};
 
-    photoService.getCommunityPhotos('http://localhost:3003/list.json').then(function(data){
+    photoService.getCommunityPhotos(ENV.communityPhotosUrl).then(function(data){
       $scope.communityPhotos = data;
     });
 
@@ -20,17 +20,18 @@ angular.module('myApp.controllers', [])
   .controller('MyCtrl2', ['$scope', function($scope) {
 
   }])
-  .controller('UploadsController', [ '$scope', '$upload', 'myCache', function($scope, $upload, myCache) {
+  .controller('UploadsController', [ '$scope', '$upload', 'myCache', 'ENV', function($scope, $upload, myCache, ENV) {
+    // TODO refactor this and move to services
   	$scope.onFileSelect = function($files, $index) {
       var index = $index + 1;
       $scope.userImages = {};
       $scope.progress = {};
       // var cache = myCache.get('myData');
-    //$files: an array of files selected, each file has name, size, and type.
-    for (var i = 0; i < $files.length; i++) {
+      //$files: an array of files selected, each file has name, size, and type.
+      for (var i = 0; i < $files.length; i++) {
       var file = $files[i];
       $scope.upload = $upload.upload({
-        url: 'http://localhost:3003/upload.json', //upload.php script, node.js route, or servlet url
+        url: ENV.uploadUrl, //upload.php script, node.js route, or servlet url
         method: 'POST',
         // headers: {'header-key': 'header-value'},
         // withCredentials: true,
@@ -48,6 +49,7 @@ angular.module('myApp.controllers', [])
         // TODO write directive to handle URLs returned
         $scope.userImages[index] = data.url;
         // console.log(myCache.get('myData'));
+        // Populate Images Cache
         var lastCachedObj = {};
         lastCachedObj.userImages = [];
         lastCachedObj.userImages[0] = {};
@@ -57,7 +59,7 @@ angular.module('myApp.controllers', [])
         if (cachedUserImages) lastCachedObj.userImages = lastCachedObj.userImages.concat(cachedUserImages);
 
         myCache.put('myData', lastCachedObj);
-        // console.log(myCache.get('myData'));
+        console.log(myCache.get('myData'));
       });
       //.error(...)
       //.then(success, error, progress);
