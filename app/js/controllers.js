@@ -3,13 +3,35 @@
 /* Controllers */
 
 angular.module('myApp.controllers', [])
-  .controller('MyCtrl1', ['$scope', 'photoService', 'ENV', function($scope, photoService, ENV) {
+  .controller('MyCtrl1', ['$scope', 'photoService', 'ENV', 'reelgenieAPI', function($scope, photoService, ENV, reelgenieAPI) {
     $scope.communityPhotos = [];
     $scope.userImages = {};
+    var disableSubmit = false;
 
     photoService.getCommunityPhotos(ENV.communityPhotosUrl).then(function(data){
       $scope.communityPhotos = data;
     });
+
+    reelgenieAPI.getToken().then(function(data){
+      $scope.token = data.token;
+      reelgenieAPI.initRequest($scope).then(function(data){
+        $scope.videoRequestId = data.video_request_id;
+        console.log(data);
+      });
+    });
+
+    $scope.disableSubmit = function(){
+      // Button for request submitting should be disabled if no token present or if request was already sent.
+      if (disableSubmit || !$scope.token) return true;
+      return false;
+    };
+
+    $scope.sendRequest = function(){
+      disableSubmit = true;
+      reelgenieAPI.sendRequest($scope).then(function(data){
+        console.log(data);
+      });
+    };
 
     photoService.populateImagesFromCache($scope);
 
@@ -20,7 +42,7 @@ angular.module('myApp.controllers', [])
   .controller('MyCtrl2', ['$scope', function($scope) {
 
   }])
-  .controller('UploadsController', [ '$scope', '$upload', 'myCache', 'ENV', function($scope, $upload, myCache, ENV) {
+  .controller('UploadsController', [ '$scope', '$upload', 'myCache', 'ENV', 'reelgenieAPI',  function($scope, $upload, myCache, ENV, reelgenieAPI) {
     // TODO refactor this and move to services
   	$scope.onFileSelect = function($files, $index) {
       var index = $index + 1;
@@ -48,6 +70,9 @@ angular.module('myApp.controllers', [])
         // file is uploaded successfully
         // TODO write directive to handle URLs returned
         $scope.userImages[index] = data.url;
+        reelgenieAPI.addImages($scope).then(function(data){
+          console.log(data);
+        });
         // console.log(myCache.get('myData'));
         // Populate Images Cache
         var lastCachedObj = {};

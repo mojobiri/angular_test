@@ -1,5 +1,7 @@
 <p>This is the partial for view 1.</p>
 
+<button ng-click="sendRequest()" ng-disabled="disableSubmit()">Send Request</button>
+
 <div bind-once style="float: left; display: inline; height: 800px; white-space: nowrap;" ng-repeat="photo in communityPhotos">
   <img style="max-height:200px; max-width:200px" ng-src="{{photo}}"/>
 </div>

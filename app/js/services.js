@@ -37,4 +37,57 @@ angular.module('myApp.services', []).
         })
       }
     }
+  }]).
+  service('reelgenieAPI', ["$http", function($http){
+    this.getToken = function($scope){
+      var data = {
+        api_key: '0c35c79e-141d-4ac7-b5f5-d2c916713dda',
+        secret:  'yorksecret'
+      };
+      var url = 'http://localhost:3003/api/v1/tokens.json';
+      return $http({method: 'POST', url: url, data: data, headers: { 'Content-Type': 'application/json'}}).
+      then(function(response){
+        console.log(response);
+        return response.data;
+      });
+    };
+    this.initRequest = function($scope){
+      if ($scope.token){
+        var data = {
+          token:                $scope.token,
+          external_project_id:  Math.floor(Math.random()*123456789),
+          user_email:           'denis@reelgeniefilms.com',
+          project_name:         'AngularTest',
+          first_name:           'Denis',
+          last_name:            'Kostrom',
+          audio_theme:          'RockNRoll',
+          design_theme:         'cool',
+          title:                'Super',
+          subtitle:             'Application'
+        };
+        var url = 'http://localhost:3003/api/v1/video_requests.json'
+        return $http({method: 'POST', url: url, data: data, headers: { 'Content-Type': 'application/json'}}).
+        then(function(response){
+          console.log(response);
+          return response.data;
+        });
+      }
+    };
+    this.sendRequest = function($scope){
+      var data = {
+        token: $scope.token
+      };
+      var url = "http://localhost:3003/api/v1/video_requests/"+$scope.videoRequestId+"/submit.json"
+      return $http({method: 'POST', url: url, data: data, headers: { 'Content-Type': 'application/json'}}).
+      then(function(response){
+        console.log(response);
+        return response.data;
+      });
+    };
+    this.addImages = function($scope){
+      var data = {
+        token: $scope.token,
+        
+      }
+    }
   }]);
