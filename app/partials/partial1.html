@@ -1,6 +1,6 @@
 <p>This is the partial for view 1.</p>
 
-<button ng-click="sendRequest()" ng-disabled="disableSubmit()">Send Request</button>
+<button ng-click="sendRequest()" ng-disabled="disableButton()">Send Request</button>
 
 <div bind-once style="float: left; display: inline; height: 800px; white-space: nowrap;" ng-repeat="photo in communityPhotos">
   <img style="max-height:200px; max-width:200px" ng-src="{{photo}}"/>
@@ -9,7 +9,7 @@
 <div ng-controller="UploadsController">
   <div ng-repeat="i in getTimes(3) track by $index">
     <p>File input:</p>
-    <input id="file_{{$index+1}}" ng-file-select="onFileSelect($files, $index)" name="file" type="file" accept="image/*" />
+    <input id="file_{{$index+1}}" ng-file-select="onFileSelect($files, $index)" ng-disabled="disableButton()" name="file" type="file" accept="image/*" />
 
     <span class="progress" ng-show="progress[$index+1] >= 0">
       <div style="color:red;width:{{progress[$index+1]}}%">{{progress[$index+1]}}%</div>

@@ -84,10 +84,41 @@ angular.module('myApp.services', []).
         return response.data;
       });
     };
-    this.addImages = function($scope){
+    this.addImages = function($scope, index, url){
       var data = {
         token: $scope.token,
-        
-      }
+        images: [
+          {
+            URL: url,
+            page: index
+          }
+        ]
+      };
+      var url = "http://localhost:3003/api/v1/video_requests/"+$scope.videoRequestId+"/add_images.json"
+      return $http({method: 'POST', url: url, data: data, headers: { 'Content-Type': 'application/json'}}).
+      then(function(response){
+        console.log(response);
+        return response.data;
+      });
+    };
+    this.addCommunityImages = function($scope){
+      var images = [];
+      angular.forEach($scope.communityPhotos, function(value, key){
+        var img = {
+          URL: value,
+          page: key
+        };
+        images.push(img);
+      });
+      var data = {
+        token: $scope.token,
+        images: images
+      };
+      var url = "http://localhost:3003/api/v1/video_requests/"+$scope.videoRequestId+"/add_images.json"
+      return $http({method: 'POST', url: url, data: data, headers: { 'Content-Type': 'application/json'}}).
+      then(function(response){
+        console.log(response.data);
+        return response.data;
+      });
     }
   }]);

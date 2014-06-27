@@ -3,31 +3,42 @@
 /* Controllers */
 
 angular.module('myApp.controllers', [])
-  .controller('MyCtrl1', ['$scope', 'photoService', 'ENV', 'reelgenieAPI', function($scope, photoService, ENV, reelgenieAPI) {
+  .controller('MyCtrl1', ['$scope', '$rootScope', 'photoService', 'ENV', 'reelgenieAPI', function($scope, $rootScope, photoService, ENV, reelgenieAPI) {
     $scope.communityPhotos = [];
     $scope.userImages = {};
-    var disableSubmit = false;
 
     photoService.getCommunityPhotos(ENV.communityPhotosUrl).then(function(data){
       $scope.communityPhotos = data;
     });
 
-    reelgenieAPI.getToken().then(function(data){
-      $scope.token = data.token;
-      reelgenieAPI.initRequest($scope).then(function(data){
-        $scope.videoRequestId = data.video_request_id;
-        console.log(data);
+    // THINK: We should keep token globally once we got it.
+    if (!$rootScope.token){
+      reelgenieAPI.getToken().then(function(data){
+        $rootScope.token = data.token;
+        reelgenieAPI.initRequest($scope).then(function(data){
+          $rootScope.videoRequestId = data.video_request_id;
+          console.log(data);
+          if ($scope.communityPhotos.length > 0){
+            reelgenieAPI.addCommunityImages($scope);
+          }else{
+            $scope.$watch('communityPhotos', function(newVal, oldVal){
+              if ($scope.communityPhotos.length > 0){
+                reelgenieAPI.addCommunityImages($scope);
+              }
+            }, true)
+          }
+        });
       });
-    });
+    };
 
-    $scope.disableSubmit = function(){
-      // Button for request submitting should be disabled if no token present or if request was already sent.
-      if (disableSubmit || !$scope.token) return true;
+    $scope.disableButton = function(){
+      // Button for request submitting and image adding should be disabled if no token present or if request was already sent.
+      if ($rootScope.disableSubmit || !$scope.token) return true;
       return false;
     };
 
     $scope.sendRequest = function(){
-      disableSubmit = true;
+      $rootScope.disableSubmit = true;
       reelgenieAPI.sendRequest($scope).then(function(data){
         console.log(data);
       });
@@ -70,7 +81,7 @@ angular.module('myApp.controllers', [])
         // file is uploaded successfully
         // TODO write directive to handle URLs returned
         $scope.userImages[index] = data.url;
-        reelgenieAPI.addImages($scope).then(function(data){
+        reelgenieAPI.addImages($scope, index, data.url).then(function(data){
           console.log(data);
         });
         // console.log(myCache.get('myData'));
